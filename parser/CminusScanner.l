@@ -35,6 +35,8 @@ WS	[ \t]
 #include <util/dlink.h>
 #include "CminusParser.h"
 
+extern SymTable symtab;
+
 %}
 
 %option bison-bridge
@@ -42,43 +44,52 @@ WS	[ \t]
 
 %%
 
-int				{ return INTEGER;}
-while				{ return WHILE; }
-else				{ return ELSE; }
-exit				{ return EXIT; }
-if				{ return IF; }
-read				{ return READ; }
-write				{ return WRITE; }
-return				{ return RETURN; }
+int							{ return INTEGER;}
+while						{ return WHILE; }
+else						{ return ELSE; }
+exit						{ return EXIT; }
+if							{ return IF; }
+read						{ return READ; }
+write						{ return WRITE; }
+return						{ return RETURN; }
 
-\!				{ return NOT;}
-"||"		    		{ return OR;}
-\&&				{ return AND;}
-\<=				{ return LE; }
-\<				{ return LT; }
-\>=				{ return GE; }
-\>				{ return GT; }
-\==				{ return EQ; }
-\!=				{ return NE; }
-\=				{ return ASSIGN; }
-\;				{ return SEMICOLON; }
-\{			    	{ return LBRACE; }
-"}"			    	{ return RBRACE; }
-\[				{ return LBRACKET; }
-\]				{ return RBRACKET; }
-\(				{ return LPAREN; }
-\)				{ return RPAREN; }
-\+				{ return PLUS; }
-\-          			{ return MINUS; }
-\*				{ return TIMES; }
-\/				{ return DIVIDE;}
-","				{ return COMMA;}
-\"[^\"]*\"			{ return STRING; }
-[a-zA-Z]([a-zA-Z]|[0-9])*	{ return IDENTIFIER; }
-[0-9]+				{ return INTCON; }
-{WS}				{ ; }
-"\n"				{ Cminus_lineno++;}
-.				{
-					fprintf(stderr, "Scanner: lexical error '%s'.\n", Cminus_text); 
-				}
+\!							{ return NOT;}
+"||"				    	{ return OR;}
+\&&							{ return AND;}
+\<=							{ return LE; }
+\<							{ return LT; }
+\>=							{ return GE; }
+\>							{ return GT; }
+\==							{ return EQ; }
+\!=							{ return NE; }
+\=							{ return ASSIGN; }
+\;							{ return SEMICOLON; }
+\{							{ return LBRACE; }
+"}"					    	{ return RBRACE; }
+\[							{ return LBRACKET; }
+\]							{ return RBRACKET; }
+\(							{ return LPAREN; }
+\)							{ return RPAREN; }
+\+							{ return PLUS; }
+\-							{ return MINUS; }
+\*							{ return TIMES; }
+\/							{ return DIVIDE;}
+","							{ return COMMA;}
+\"[^\"]*\"					{ 
+								Cminus_lval.ival = SymIndex(symtab, Cminus_text);
+								return STRING; 
+							}
+[a-zA-Z]([a-zA-Z]|[0-9])*	{
+								Cminus_lval.ival = SymIndex(symtab, Cminus_text);
+								return IDENTIFIER; 
+							}
+[0-9]+						{ 
+								Cminus_lval.ival = atoi(Cminus_text);
+								return INTCON;
+							}
+{WS}						{ ; }
+"\n"						{ Cminus_lineno++;}
+.							{
+								fprintf(stderr, "Scanner: lexical error '%s'.\n", Cminus_text); 
+							}
 %%
