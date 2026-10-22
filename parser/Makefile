@@ -1,4 +1,4 @@
-SRCS = CminusScanner.c CminusParser.c
+SRCS = CminusParser.c CminusScanner.c
 LEX_SRCS = CminusScanner.l
 YACC_SRCS = CminusParser.y
 CC = gcc
